@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalogador ALIM & Decupador Audiovisual</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Cabeçalho Principal -->
+  <header class="app-header">
+    <div class="brand-area">
+      <div class="brand-badge">ALIM</div>
+      <div class="brand-title">
+        <h1>Catalogador Linguístico &amp; Decupador</h1>
+        <p>Padrão Lameta / Dublin Core &bull; Exportação DSpace SAF Offline</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div id="workspacePathDisplay" class="workspace-pill" title="Nenhuma pasta selecionada">
+        Nenhuma pasta selecionada
+      </div>
+      <button id="btnOpenWorkspace" class="btn btn-primary">
+        &#128193; Abrir Pasta de Trabalho
+      </button>
+      <button id="btnExportDSpace" class="btn btn-purple" disabled>
+        &#128230; Exportar para DSpace (SAF)
+      </button>
+    </div>
+  </header>
+
+  <!-- Layout em 3 Colunas -->
+  <div class="app-layout">
+    <!-- Coluna 1: Explorador Lateral de Sessões -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-header-top">
+          <h2>Sessões do Projeto</h2>
+          <label style="font-size: 11px; color: var(--text-secondary); cursor: pointer;">
+            <input type="checkbox" id="chkSelectAllSessions" checked /> Todas
+          </label>
+        </div>
+        <div class="sidebar-toolbar">
+          <button id="btnNewSession" class="btn btn-success btn-xs" style="flex: 1;" disabled>
+            + Nova Sessão
+          </button>
+          <button id="btnCloneSession" class="btn btn-outline btn-xs" style="flex: 1;" disabled title="Copia os metadados atuais para uma nova sessão em branco">
+            &#128203; Clonar Sessão
+          </button>
+        </div>
+      </div>
+
+      <div id="sessionListContainer" class="session-list">
+        <div class="empty-placeholder">
+          Abra uma Pasta de Trabalho para listar ou criar sessões.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Coluna 2: Painel Principal (Formulário Dublin Core) -->
+    <main class="main-panel">
+      <div class="panel-toolbar">
+        <div class="session-heading">
+          <h2 id="currentSessionHeader">Nenhuma Sessão Selecionada</h2>
+          <span id="currentSessionSubheader">Selecione ou crie uma sessão na barra lateral</span>
+        </div>
+        <div class="toolbar-buttons">
+          <button id="btnDeleteSession" class="btn btn-danger" disabled>
+            Excluir Sessão
+          </button>
+          <button id="btnSaveSession" class="btn btn-primary" disabled>
+            &#128190; Salvar Metadados
+          </button>
+        </div>
+      </div>
+
+      <form id="dublinCoreForm" onsubmit="return false;">
+        <!-- Seção 1: Identificação e Datas -->
+        <section class="form-section">
+          <div class="form-section-title">
+            <span>1. Identificação, Tipo e Datas</span>
+            <span class="dc-tag">Dublin Core Standard</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">
+                Título da Sessão <span class="dc-tag">dc.title</span>
+              </label>
+              <input type="text" id="dc_title" class="form-control" placeholder="Ex: Entrevista sobre narrativa tradicional..." disabled />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Tipo do Recurso <span class="dc-tag">dc.type</span>
+              </label>
+              <select id="dc_type" class="form-control" disabled>
+                <option value="MovingImage">MovingImage (Vídeo)</option>
+                <option value="Sound">Sound (Áudio)</option>
+                <option value="Text">Text (Texto / Transcrição)</option>
+                <option value="Image">Image (Fotografia / Imagem)</option>
+                <option value="Dataset">Dataset (Corpus / Dados)</option>
+                <option value="Collection">Collection (Acervo)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Identificador Alternativo / Código ALIM <span class="dc-tag">dc.identifier.other</span>
+              </label>
+              <input type="text" id="dc_identifier_other" class="form-control" placeholder="Ex: ALIM-2026-S01" disabled />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                URI / Handle <span class="dc-tag">dc.identifier.uri</span>
+              </label>
+              <input type="text" id="dc_identifier_uri" class="form-control" placeholder="Ex: http://hdl.handle.net/..." disabled />
+            </div>
+          </div>
+
+          <div class="form-grid-4">
+            <div class="form-group">
+              <label class="form-label">
+                Criação <span class="dc-tag">dc.date.created</span>
+              </label>
+              <input type="date" id="dc_date_created" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Publicação <span class="dc-tag">dc.date.issued</span>
+              </label>
+              <input type="date" id="dc_date_issued" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Submissão <span class="dc-tag">dc.date.accessioned</span>
+              </label>
+              <input type="date" id="dc_date_accessioned" class="form-control" disabled />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Disponibilização <span class="dc-tag">dc.date.available</span>
+              </label>
+              <input type="date" id="dc_date_available" class="form-control" disabled />
+            </div>
+          </div>
+        </section>
+
+        <!-- Seção 2: Responsáveis, Financiamento e Publicador -->
+        <section class="form-section">
+          <div class="form-section-title">
+            <span>2. Pesquisadores, Financiamento e Instituição</span>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">
+              <span>Orientador / Pesquisador Responsável <span class="dc-tag">dc.contributor.advisor</span></span>
+              <button type="button" class="btn btn-outline btn-xs btn-add-multi" data-field="dc.contributor.advisor" disabled>
+                + Adicionar
+              </button>
+            </div>
+            <div id="list_dc_contributor_advisor" class="dynamic-list"></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">
+                Instituição / Publicador <span class="dc-tag">dc.publisher</span>
+              </label>
+              <input type="text" id="dc_publisher" class="form-control" placeholder="Ex: Projeto ALIM / Universidade..." disabled />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Agência de Fomento / Patrocínio <span class="dc-tag">dc.description.sponsorship</span>
+              </label>
+              <input type="text" id="dc_description_sponsorship" class="form-control" placeholder="Ex: CNPq / CAPES / FAP..." disabled />
+            </div>
+          </div>
+        </section>
+
+        <!-- Seção 3: Descrições Multi-uso (Conteúdo, Participantes, Línguas) -->
+        <section class="form-section">
+          <div class="form-section-title">
+            <span>3. Descrições e Resumos (Multi-uso: Conteúdo, Participantes, Contexto)</span>
+            <button type="button" id="btnAddAbstract" class="btn btn-outline btn-xs" disabled>
+              + Adicionar Bloco de Descrição
+            </button>
+          </div>
+          <div class="form-label">
+            <span>Blocos mapeados para <span class="dc-tag">dc.description.abstract</span></span>
+          </div>
+          <div id="list_dc_description_abstract" class="dynamic-list"></div>
+        </section>
+
+        <!-- Seção 4: Línguas, Localizações e Assuntos (Múltiplos Valores) -->
+        <section class="form-section">
+          <div class="form-section-title">
+            <span>4. Línguas, Cobertura Espacial e Assuntos</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <div class="form-label">
+                <span>Língua(s) (Nome) <span class="dc-tag">dc.language</span></span>
+                <button type="button" class="btn btn-outline btn-xs btn-add-multi" data-field="dc.language" disabled>
+                  + Adicionar
+                </button>
+              </div>
+              <div id="list_dc_language" class="dynamic-list"></div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label">
+                <span>Código ISO 639-3 <span class="dc-tag">dc.language.iso</span></span>
+                <button type="button" class="btn btn-outline btn-xs btn-add-multi" data-field="dc.language.iso" disabled>
+                  + Adicionar
+                </button>
+              </div>
+              <div id="list_dc_language_iso" class="dynamic-list"></div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label">
+                <span>Cobertura Espacial / Localização <span class="dc-tag">dc.coverage.spatial</span></span>
+                <button type="button" class="btn btn-outline btn-xs btn-add-multi" data-field="dc.coverage.spatial" disabled>
+                  + Adicionar
+                </button>
+              </div>
+              <div id="list_dc_coverage_spatial" class="dynamic-list"></div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-label">
+                <span>Palavras-chave / Assunto <span class="dc-tag">dc.subject</span></span>
+                <button type="button" class="btn btn-outline btn-xs btn-add-multi" data-field="dc.subject" disabled>
+                  + Adicionar
+                </button>
+              </div>
+              <div id="list_dc_subject" class="dynamic-list"></div>
+            </div>
+
+            <div class="form-group full-width">
+              <div class="form-label">
+                <span>Outros Assuntos / Domínio Linguístico <span class="dc-tag">dc.subject.other</span></span>
+                <button type="button" class="btn btn-outline btn-xs btn-add-multi" data-field="dc.subject.other" disabled>
+                  + Adicionar
+                </button>
+              </div>
+              <div id="list_dc_subject_other" class="dynamic-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Seção 5: Formatos MIME Detectados Automaticamente -->
+        <section class="form-section">
+          <div class="form-section-title">
+            <span>5. Formatos de Mídia (Preenchimento Automático)</span>
+            <span class="dc-tag">dc.format.mimetype</span>
+          </div>
+          <div id="mimeTypesContainer" class="mime-chips">
+            <span style="color: var(--text-secondary); font-size: 12px;">
+              Anexe arquivos de mídia à sessão para preencher automaticamente o MIME Type.
+            </span>
+          </div>
+        </section>
+      </form>
+    </main>
+
+    <!-- Coluna 3: Mídias da Sessão e Fila de Decupagem FFmpeg -->
+    <aside class="right-panel">
+      <!-- Subpainel Superior: Mídias Anexadas -->
+      <div class="right-subpanel">
+        <div class="subpanel-header">
+          <h3>Mídias da Sessão</h3>
+          <button id="btnAttachMedia" class="btn btn-primary btn-xs" disabled>
+            + Anexar Mídia
+          </button>
+        </div>
+        <div id="mediaListContainer" class="media-list">
+          <div class="empty-placeholder">
+            Nenhuma mídia anexada.<br />Clique em uma mídia de vídeo/áudio para abrir o Decupador.
+          </div>
+        </div>
+      </div>
+
+      <!-- Subpainel Inferior: Fila de Corte FFmpeg -->
+      <div class="right-subpanel">
+        <div class="subpanel-header">
+          <h3>Fila de Corte (FFmpeg)</h3>
+          <div style="display: flex; gap: 6px;">
+            <button id="btnTogglePauseQueue" class="btn btn-warning btn-xs">
+              Pausar Fila
+            </button>
+            <button id="btnClearFinishedQueue" class="btn btn-outline btn-xs" title="Limpar concluídos/cancelados">
+              Limpar
+            </button>
+          </div>
+        </div>
+        <div id="queueListContainer" class="queue-list">
+          <div class="empty-placeholder">
+            A fila de recortes está vazia.
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

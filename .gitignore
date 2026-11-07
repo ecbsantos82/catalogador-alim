@@ -1,0 +1,30 @@
+# Dependências do Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Compilações e builds do Electron
+dist/
+out/
+build/
+*.exe
+
+# Arquivos temporários de vídeo e decupagem
+*.mp4
+*.mkv
+*.avi
+*.wav
+*.mp3
+temp/
+cuts/
+
+# Arquivos de ambiente e logs
+.env
+*.log
+
+# Arquivos de sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
